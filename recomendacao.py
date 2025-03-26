@@ -1,7 +1,9 @@
+# Script escrito por André Luiz Bandeli Júnior (231363) e Débora Batista Delfino (233473)
+
 from math import sqrt
 
 avaliacoes = {
-    "Maria": {"desbrota": 9, "pulverização": 6, "adubação": 8, "embalagem": 8, "seleção": 8},
+    "Maria": {"desbrota": 9, "adubação": 6, "embalagem": 8, "seleção": 8},
     "Antônio": {"colheita": 6, "capina": 8},
     "João": {"desbrota": 3, "capina": 7, "embalagem": 4, "seleção": 2},
     "Pedro": {"colheita": 7, "pulverização": 9, "capina": 7},
@@ -33,14 +35,14 @@ def recomendar_pulverizacao(avaliacao, tarefa_alvo):
         else:
             total = 0
             sum_sim = 0
-            for outra_pessoa in avaliacao:
-                if outra_pessoa == pessoa:
+            for pessoa2 in avaliacao:
+                if pessoa2 == pessoa:
                     continue
-                if tarefa_alvo not in avaliacao[outra_pessoa]:
+                if tarefa_alvo not in avaliacao[pessoa2]:
                     continue
-                sim = similaridade_euclidiana(avaliacao, pessoa, outra_pessoa)
+                sim = similaridade_euclidiana(avaliacao, pessoa, pessoa2)
                 if sim > 0:
-                    total += sim * avaliacao[outra_pessoa][tarefa_alvo]
+                    total += sim * avaliacao[pessoa2][tarefa_alvo]
                     sum_sim += sim
             if sum_sim > 0:
                 predicted_score = total / sum_sim

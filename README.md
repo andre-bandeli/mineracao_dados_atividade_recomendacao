@@ -1,13 +1,11 @@
 ##### FA084 - Introdução à Mineração de Dados na Agricultura | Faculdade de Engenharia Agrícola da Unicamp
 
-
-
 # Algorítmos de Recomendação de Tarefas | Similaridade Euclidiana | #task1
 
-Algoritmo de recomendação que sugere tarefas para funcionários de acordo com as avaliações de outros funcionários com preferências similares.
+Algoritmo de recomendação que sugere tarefas para funcionários de acordo com as avaliações de outros funcionários com avaliações similares.
 
 ## 📌 Objetivo
-Recomendar tarefas **não realizadas** por um funcionário específico, utilizando avaliações de outros funcionários com padrões de avaliação semelhantes.
+Recomendar tarefas para um funcionário específico, utilizando avaliações de outros funcionários com padrões de avaliação semelhantes. A metodologia baseia-se em implementar o conceito de 'Distância Euclidiana' e sua utilização para criar recomendações baseadas em notas similares.  
 
 ## Funcionamento
 
@@ -27,7 +25,7 @@ Crie um dicionário contendo os funcionários e os valores de suas avaliações
 
 ```python
 avaliacoes = {
-    "Maria": {"desbrota": 9, "pulverização": 6, "adubação": 8, "embalagem": 8, "seleção": 8},
+    "Maria": {"desbrota": 9, "adubação": 6, "embalagem": 8, "seleção": 8},
     "Antônio": {"colheita": 6, "capina": 8},
     "João": {"desbrota": 3, "capina": 7, "embalagem": 4, "seleção": 2},
     "Pedro": {"colheita": 7, "pulverização": 9, "capina": 7},
@@ -65,6 +63,13 @@ def similaridade_euclidiana(base, funcionario1, funcionario2):
 ```
 
 ### Recomendação de pessoa para a tarefa de pulverização
+- O trecho de código a seguir cria uma função chamada 'recomendar_pulverizacao' que recebe 2 argumentos: base e tarefa_alvo.
+- A primeira etapa consiste em criar um dicionário 'scores' para armazenar pontuações. Em seguida, a função entra em um loop que percorre cada pessoa na base.
+- Caso a tarefa_alvo já esteja associada à pessoa, o valor existente é adicionado diretamente ao dicionário 'scores'. Caso contrário, são inicializadas variáveis 'total' e 'sum_sim' para calcular uma previsão.
+- A função entra em um novo loop interno, iterando sobre outras pessoas na base. Para cada pessoa diferente que possui a tarefa_alvo calcula a similaridade euclidiana. Se a similaridade for maior que 0, acumula o produto resultante da similaridade pelo valor da tarefa em 'total' e soma as similaridades em 'sum_sim'.
+- Após o loop interno, se 'sum_sim' for maior que 0, calcula a pontuação prevista (total / sum_sim) e a adiciona ao dicionário 'scores'.
+- Por fim, os resultados são ordenados em ordem decrescente de pontuação e retornados como uma lista de rankings.
+
 ```python
 def recomendar_pulverizacao(base, tarefa_alvo):
     scores = {}
@@ -90,7 +95,12 @@ def recomendar_pulverizacao(base, tarefa_alvo):
     return rankings
 ```
 ### Fórmula de Recomendação
-O trecho de código a seguir cria uma função que recebe 2 argumentos: base e funcionário alvo. A primeira etapa consiste em criar dois dicionários (totais e soma_similaridade). 
+- O trecho de código a seguir cria uma função chamada 'recomendar_tarefas' que recebe 2 argumentos: base e funcionario_alvo.
+- A função inicia criando dois dicionários 'totais' (para adicionar pontuações ponderadas) e 'soma_similaridade' (para guardar a soma das similaridades).
+- Em seguida, entra em um loop que percorre todos os outros funcionários na base. Para cada funcionário diferente do alvo, calcula a similaridade euclidiana. Se a similaridade for maior que 0, prossegue.
+- Dentro deste loop, outro loop percorre as tarefas do funcionário atual. Para cada tarefa que não está associada ao funcionario_alvo, atualiza o dicionário 'totais' (adicionando o produto do valor da tarefa pela similaridade) e 'soma_similaridade' (acumulando a similaridade).
+- Após processar todos os funcionários, verifica se 'totais' não está vazio. Caso esteja, retorna uma lista vazia.
+- Por fim, calcula as pontuações finais dividindo 'totais' pela 'soma_similaridade' correspondente, ordena as tarefas em ordem decrescente de pontuação e retorna o ranking.
 
 ```python
 def recomendar_tarefas(base, funcionario_alvo):
@@ -138,13 +148,13 @@ O resultado esperado é:
 | Pessoa   | Score |
 |----------|-------|
 | Pedro    | 9.00  |
+| Clara    | 9.00  |
 | Antônio  | 8.25  |
-| Clara    | 7.80  |
-| João     | 7.52  |
+| João     | 7.61  |
 | Julia    | 7.00  |
-| Lara     | 6.44  |
-| Maria    | 6.00  |
-| Miguel   | 5.41  |
+| Maria    | 6.72  |
+| Lara     | 6.48  |
+| Miguel   | 5.00  |
 | Ana      | 5.00  |
 
 
@@ -158,12 +168,12 @@ for score, tarefa in recomendacoes_pessoa:
 ```
 O resultado esperado é: 
 
-| Tarefa    | Score |
-|:---------:|:-----:|
-| adubação  | 7.60  |
-| embalagem | 7.14  |
-| colheita  | 6.51  |
-| desbrota  | 5.71  |
+| Tarefa     | Score |
+|------------|-------|
+| embalagem  | 7.52  |
+| desbrota   | 6.58  |
+| colheita   | 6.51  |
+| adubação   | 6.25  |
 
 ### Avaliação de desempenho
 O algoritmo funciona bem com a quantidade de dados do nosso dicionário. Porém, em contextos de aplicações reais, é importante pensarmos: este algorítmo é o mais eficiênte, dado meus objetivos/recursos? 
@@ -179,12 +189,30 @@ Fonte: Complexidade de Algoritmos. Autor: Siang Wun Song - Universidade de São 
 
 **Análise de complexidade de tempo e espaço**
 
-- Função similaridade_euclidiana(base, funcionario1, funcionario2) = **O(T1 + Tc) ≈ O(T)**
+- Função similaridade_euclidiana(base, funcionario1, funcionario2) = **O(T)**
 
-- Função recomendar_tarefas(base, funcionario_alvo) = **O(N * (T + K) + M log M)**
+- Função recomendar_tarefas(base, funcionario_alvo) = **O ( P * T + T log T)**
 
-- Função recomendar_pulverizacao(base, tarefa_alvo) = **O(N^2 * T + N log N)**
+- Função recomendar_pulverizacao(base, tarefa_alvo) = **O(P^2 * T + P log P)**
 
+onde T = tarefas e P = pessoas
 
 ----- 
-Dada a análise de complexidade de tempo e espaço, podemos analisar que o algoritmo é adequado para este contexto específico, onde a quantidade de funcionários é baixa, pois a funcção recomendar_pulverizacoes possui um N², tornando custoso para valores altos.  
+
+Dada a análise de complexidade de tempo e espaço, podemos analisar que o algoritmo é adequado para este contexto específico, onde a quantidade de funcionários é baixa, pois a funcção recomendar_pulverizacoes possui um P², tornando custoso para valores altos na entrada.  
+
+-----
+### Utilizando bibliotecas
+Uma outra solução poderia ser utilizando a biblioteca Scipy, que abstrai os passo-a-passo dos cálculos da distância entre os pontos para nós, meros Engenheiros Agrícolas 🤠
+
+```python
+from scipy.spatial.distance import euclidean
+```
+
+-----
+
+Exemplo: [https://www.datacamp.com/pt/tutorial/euclidean-distance]
+
+Exemplo: análise de complexidade algoritmo sorted() e sort(): [https://www.naukri.com/code360/library/difference-between-sort-and-sorted-in-python]
+
+--- 
